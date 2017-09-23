@@ -1,7 +1,5 @@
 
-package com.uberspot.a2048;
-
-import java.util.Locale;
+package com.digant.jagtap.rapidfire2048;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -25,6 +23,8 @@ import android.webkit.WebSettings;
 import android.webkit.WebSettings.RenderPriority;
 import android.webkit.WebView;
 import android.widget.Toast;
+
+import java.util.Locale;
 
 import de.cketti.library.changelog.ChangeLog;
 
