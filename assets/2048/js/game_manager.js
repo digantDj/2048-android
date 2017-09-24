@@ -13,6 +13,9 @@ function GameManager(size, InputManager, Actuator, StorageManager) {
   this.inputManager.on("undoWithConfirmation", this.undoWithConfirmation.bind(this));  
   this.inputManager.on("keepPlaying", this.keepPlaying.bind(this));
 
+  this.rapidFireWidth = 1;
+  this.rapidFireId = undefined;
+
   this.setup();
 }
 
@@ -26,7 +29,8 @@ GameManager.prototype.restart = function () {
 // Undo the current move
 GameManager.prototype.undoMove = function () {
   this.actuator.continueGame(); // Clear the game won/lost message
-    
+
+  this.resetRapidFire();
   if (this.storageManager.getLengthOfGameStatesStack() > 0) {
     var previousState = this.storageManager.popGameState();
 
@@ -96,6 +100,9 @@ GameManager.prototype.setup = function () {
 
     // Add the initial tiles
     this.addStartTiles();
+
+    // RapidFireBar Run
+    this.countDownRun();
   }
 
   // Update the actuator
@@ -228,8 +235,12 @@ GameManager.prototype.move = function (direction) {
   if (moved) {
     this.addRandomTile();
 
+    // If moved, reset RapidFire bar
+    this.resetRapidFire();
+
     if (!this.movesAvailable()) {
       this.over = true; // Game over!
+      clearInterval(this.rapidFireId);
     }
 
     this.actuate();
@@ -315,4 +326,53 @@ GameManager.prototype.tileMatchesAvailable = function () {
 
 GameManager.prototype.positionsEqual = function (first, second) {
   return first.x === second.x && first.y === second.y;
+};
+
+GameManager.prototype.countDownRun = function (rapidFire) {
+    var elem = document.getElementById("timerBar");
+    var rapidFireWidth = this.rapidFireWidth;
+    this.rapidFireId = setInterval(frame, 10);
+    var gameContainer = document.querySelector("#timeLeft");
+    var timerValue = document.querySelector("#timerValue");
+    timerValue.innerText = 10;
+    var self = this;
+    function frame() {
+        if (rapidFireWidth >= 100) {
+            clearInterval(this.rapidFireId);
+        } else {
+            rapidFireWidth = rapidFireWidth + 0.15;
+            timerValue.innerText = (Math.floor(10 - rapidFireWidth/10) >= 0) ? Math.floor(10 - rapidFireWidth/10) : 0;
+
+            elem.style.width = (100 - rapidFireWidth).toString() + '%';
+            if(rapidFireWidth > 70){
+               gameContainer.style.color = 'red';
+               gameContainer.style.fontSize = '31px';
+            }
+            else{
+                gameContainer.style.fontSize = '20px';
+                gameContainer.style.color = '776e65';
+            }
+
+            if(rapidFireWidth >= 100){
+                gameContainer.style.color = 'red';
+                clearInterval(this.rapidFireId);
+                self.setGameOver();
+            }
+        }
+    }
+};
+
+GameManager.prototype.setGameOver = function() {
+    this.over = true;
+    this.actuate();
+};
+
+GameManager.prototype.resetRapidFire = function() {
+    this.width = 1;
+    clearInterval(this.rapidFireId);
+    this.countDownRun();
+};
+
+GameManager.prototype.setRapidFireId = function(rapidFireId) {
+    this.rapidFireId = rapidFireId;
 };

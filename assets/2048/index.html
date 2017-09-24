@@ -19,7 +19,7 @@
 <body>
   <div class="container">
     <div class="heading">
-      <h1 class="title">2048</h1>
+      <h1 class="title">Timed 2048</h1>
       <div class="scores-container">
         <div class="score-container">0</div>
         <div class="best-container">0</div>
@@ -27,10 +27,23 @@
     </div>
 
     <div class="above-game">
-      <div id="night" style="padding:10px;">
+      </br>
+      <div id="timerContainer">
+        <div id="timerBar"></div>
+      </div>
+      </br>
+      <div id="night" style="padding:10px;display: inline;">
             <a id="nightbtn">NIGHT MODE <img src="style/night.png"></a>
       </div>
-      <p class="game-intro">Join the numbers and get to the <strong>2048 tile!</strong></p>
+      <span id="timeLeft" style="
+   color: #776e65;
+    font-size: 20px;
+    float: right;
+    font-style: italic;
+    display: inline;
+    font-weight: bold;
+">TIME LEFT : <span id="timerValue"></span>s</span>
+      <p class="game-intro" style="line-height:20px;">Join the numbers before <span class="redBold">timer</span> runs out!</br><span class="redBold">Swipe to move.</span> 2 + 2 = 4. Reach 2048.</strong></p>
       <a class="restart-button">New Game</a>
       <a class="undo-button">Undo</a>      
     </div>
@@ -92,5 +105,6 @@
   <script src="js/game_manager.js"></script>
   <script src="js/application.js"></script>
   <script src="js/nightmode.js"></script>
+
 </body>
 </html>
