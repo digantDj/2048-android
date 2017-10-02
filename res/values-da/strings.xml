@@ -1,6 +1,7 @@
 <resources>
   <string name="action_settings">Indstillinger</string>
-  <string name="app_name">2048</string>
   <string name="press_back_again_to_exit">Tryk tilbage igen for at slutte</string>
   <string name="toggle_fullscreen">Hold knappen inde for at skifte til fuld skærm</string>
+  <string name="app_name">Tidsindstillet 2048</string>
+  <string name="title_activity_splash">Velkommen til Timed 2048!</string>
 </resources>

@@ -15,7 +15,6 @@ function GameManager(size, InputManager, Actuator, StorageManager) {
 
   this.rapidFireWidth = 1;
   this.rapidFireId = undefined;
-
   this.setup();
 }
 
@@ -24,6 +23,10 @@ GameManager.prototype.restart = function () {
   this.storageManager.clearGameState();
   this.actuator.continueGame(); // Clear the game won/lost message
   this.setup();
+  clearInterval(this.rapidFireId);
+
+  // Show Interstitial Ad
+  //this.showInterstitalAd();
 };
 
 // Undo the current move
@@ -107,6 +110,7 @@ GameManager.prototype.setup = function () {
 
   // Update the actuator
   this.actuate();
+
 };
 
 // Set up the initial tiles to start the game with
@@ -241,6 +245,7 @@ GameManager.prototype.move = function (direction) {
     if (!this.movesAvailable()) {
       this.over = true; // Game over!
       clearInterval(this.rapidFireId);
+      this.showInterstitalAd();
     }
 
     this.actuate();
@@ -365,6 +370,9 @@ GameManager.prototype.countDownRun = function (rapidFire) {
 GameManager.prototype.setGameOver = function() {
     this.over = true;
     this.actuate();
+
+    // Call Advertisment on GameOver
+    this.showInterstitalAd();
 };
 
 GameManager.prototype.resetRapidFire = function() {
@@ -376,3 +384,8 @@ GameManager.prototype.resetRapidFire = function() {
 GameManager.prototype.setRapidFireId = function(rapidFireId) {
     this.rapidFireId = rapidFireId;
 };
+
+GameManager.prototype.showInterstitalAd = function() {
+    clearInterval(this.rapidFireId);
+    app.showInterstitialAd();
+}

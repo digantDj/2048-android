@@ -3,6 +3,7 @@ package com.digant.jagtap.rapidfire2048;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
@@ -19,14 +20,19 @@ import android.view.View.OnTouchListener;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.WindowManager.LayoutParams;
+import android.webkit.JavascriptInterface;
 import android.webkit.WebSettings;
 import android.webkit.WebSettings.RenderPriority;
 import android.webkit.WebView;
 import android.widget.Toast;
 
-import java.util.Locale;
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.InterstitialAd;
+import com.google.android.gms.ads.MobileAds;
 
-import de.cketti.library.changelog.ChangeLog;
+import java.util.Locale;
 
 public class MainActivity extends Activity {
 
@@ -40,6 +46,10 @@ public class MainActivity extends Activity {
     private long mLastTouch;
     private static final long mTouchThreshold = 2000;
     private Toast pressBackToast;
+
+    // Google AdMob
+    private AdView mAdView;
+    private InterstitialAd mInterstitialAd;
 
     @SuppressLint({ "SetJavaScriptEnabled", "NewApi", "ShowToast" })
     @Override
@@ -78,11 +88,31 @@ public class MainActivity extends Activity {
 
         setContentView(R.layout.activity_main);
 
-        ChangeLog cl = new ChangeLog(this);
+
+        MobileAds.initialize(this, "ca-app-pub-5382733936047144~2644096719");
+//ca-app-pub-5382733936047144/2333482829
+      //  AdView mAdView = (AdView) findViewById(R.id.adView2);
+      //  AdRequest adRequest = new AdRequest.Builder().build();
+      //  mAdView.loadAd(adRequest);
+
+        mInterstitialAd = new InterstitialAd(this);
+        mInterstitialAd.setAdUnitId("ca-app-pub-5382733936047144/2681547747");
+        mInterstitialAd.loadAd(new AdRequest.Builder().build());
+
+        // Set an AdListener.
+        mInterstitialAd.setAdListener(new AdListener() {
+            @Override
+            public void onAdClosed() {
+                mInterstitialAd.loadAd(new AdRequest.Builder().build());
+                mWebView.loadUrl("javascript:callJS()");
+            }
+        });
+
+     /*   ChangeLog cl = new ChangeLog(this);
         if (cl.isFirstRun()) {
            // cl.getLogDialog().show();
 
-        }
+        } */
 
         // Load webview with game
         mWebView = (WebView) findViewById(R.id.mainWebView);
@@ -93,6 +123,10 @@ public class MainActivity extends Activity {
         settings.setRenderPriority(RenderPriority.HIGH);
         settings.setDatabasePath(getFilesDir().getParentFile().getPath() + "/databases");
 
+        // Adding Show Interstitial Ads Function to WebView
+
+        mWebView.addJavascriptInterface(new WebViewJavaScriptInterface(this), "app");
+
         // If there is a previous instance restore it in the webview
         if (savedInstanceState != null) {
         	// TODO: If app was minimized and Locale language was changed, we need to reload webview with changed language
@@ -102,7 +136,7 @@ public class MainActivity extends Activity {
             mWebView.loadUrl("file:///android_asset/2048/index.html?lang=" + Locale.getDefault().getLanguage());
         }
 
-        Toast.makeText(getApplication(), R.string.toggle_fullscreen, Toast.LENGTH_SHORT).show();
+        // Toast.makeText(getApplication(), R.string.toggle_fullscreen, Toast.LENGTH_SHORT).show();
         // Set fullscreen toggle on webview LongClick
         mWebView.setOnTouchListener(new OnTouchListener() {
 
@@ -193,4 +227,49 @@ public class MainActivity extends Activity {
             super.onBackPressed();
         }
     }
+
+    public void showInterstitialAdMain(){
+        if (mInterstitialAd.isLoaded()) {
+            mInterstitialAd.show();
+        } else {
+            Log.d("TAG", "The interstitial wasn't loaded yet.");
+        }
+    }
+
+
+
+    /*
+     * JavaScript Interface. Web code can access methods in here
+     * (as long as they have the @JavascriptInterface annotation)
+     */
+    public class WebViewJavaScriptInterface{
+
+        private Context context;
+
+        /*
+         * Need a reference to the context in order to sent a post message
+         */
+        public WebViewJavaScriptInterface(Context context){
+            this.context = context;
+        }
+
+        /*
+         * This method can be called from Android. @JavascriptInterface
+         * required after SDK version 17.
+         */
+        @JavascriptInterface
+        public void showInterstitialAd(){
+            runOnUiThread(new Runnable() {
+                @Override public void run() {
+                    if (mInterstitialAd.isLoaded()) {
+                        mInterstitialAd.show();
+                    }else {
+                        Log.d("TAG", "The interstitial wasn't loaded yet.");
+                    }
+                }
+            });
+
+        }
+    }
+
 }

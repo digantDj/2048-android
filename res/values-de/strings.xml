@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">2048</string>
+    <string name="app_name">Zeitgesteuert 2048</string>
     <string name="action_settings">Einstellungen</string>
     <string name="press_back_again_to_exit">Drücke nochmal Zurück zum Beenden</string>
     <string name="toggle_fullscreen">Lange drücken, um Vollbildschirm anzuzeigen</string>
+    <string name="title_activity_splash">Willkommen bei Timed 2048!</string>
 
 </resources>
